@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Authentication</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p>Already have an account? <a href="login.html">Login</a></p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYjBD4p0n_l_EZ-0ZGaTQfFNA41oZX37w",
+            authDomain: "signup-6504f.firebaseapp.com",
+            projectId: "signup-6504f",
+            storageBucket: "signup-6504f.firebasestorage.app",
+            messagingSenderId: "722220780138",
+            appId: "1:722220780138:web:9a8cfb00b0c55590c71813"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log('User is already logged in:', user.email);
+                window.location.href = 'welcome.html';
+            }
+        });
+
+        // Handle Sign Up
+        document.getElementById('signup-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            console.log('Attempting to create user with email:', email);
+
+            // Show loading state
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Creating Account...';
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed up successfully
+                    const user = userCredential.user;
+                    console.log('User created successfully:', user.email);
+                    alert('Account created successfully!');
+                    window.location.href = 'welcome.html';
+                })
+                .catch((error) => {
+                    // Handle errors
+                    console.error('Error creating user:', error);
+                    alert('Error: ' + error.message);
+                    // Reset button state
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Sign Up';
+                });
+        });
+    </script>
+</body>
+</html> 

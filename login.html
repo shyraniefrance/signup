@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Firebase Authentication</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <input type="text" id="login-identifier" placeholder="Username or Email" required>
+                    <div class="error-message" id="identifier-error"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="login-password" placeholder="Password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="register.html">Register</a></p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYjBD4p0n_l_EZ-0ZGaTQfFNA41oZX37w",
+            authDomain: "signup-6504f.firebaseapp.com",
+            projectId: "signup-6504f",
+            storageBucket: "signup-6504f.firebasestorage.app",
+            messagingSenderId: "722220780138",
+            appId: "1:722220780138:web:9a8cfb00b0c55590c71813",
+            databaseURL: "https://signup-6504f-default-rtdb.firebaseio.com"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log('User is already logged in:', user.email);
+                window.location.href = 'welcome.html';
+            }
+        });
+
+        // Form validation
+        function validateForm() {
+            const identifier = document.getElementById('login-identifier').value;
+            const errorElement = document.getElementById('identifier-error');
+            
+            // Reset error message
+            errorElement.style.display = 'none';
+
+            // Check if input is empty
+            if (!identifier) {
+                errorElement.textContent = 'Please enter your username or email';
+                errorElement.style.display = 'block';
+                return false;
+            }
+
+            // Check if input is a valid email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(identifier)) {
+                // If not an email, check if it's a valid username (at least 3 characters)
+                if (identifier.length < 3) {
+                    errorElement.textContent = 'Please enter a valid username (min 3 characters) or email';
+                    errorElement.style.display = 'block';
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // Function to find email by username
+        function findEmailByUsername(username) {
+            return new Promise((resolve, reject) => {
+                database.ref('users').orderByChild('username').equalTo(username).once('value')
+                    .then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const userData = snapshot.val();
+                            const userId = Object.keys(userData)[0];
+                            resolve(userData[userId].email);
+                        } else {
+                            reject(new Error('Username not found'));
+                        }
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
+        }
+
+        // Handle Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+
+            const identifier = document.getElementById('login-identifier').value;
+            const password = document.getElementById('login-password').value;
+
+            console.log('Attempting to login with identifier:', identifier);
+
+            // Show loading state
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Logging in...';
+
+            try {
+                // Check if identifier is an email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                const isEmail = emailRegex.test(identifier);
+
+                let emailToUse = identifier;
+                
+                // If it's not an email, try to find the email associated with the username
+                if (!isEmail) {
+                    emailToUse = await findEmailByUsername(identifier);
+                }
+
+                // Attempt to login with the email
+                const userCredential = await auth.signInWithEmailAndPassword(emailToUse, password);
+                const user = userCredential.user;
+                console.log('User logged in successfully:', user.email);
+               // alert('Logged in successfully!');
+                window.location.href = 'welcome.html';
+            } catch (error) {
+                // Handle errors
+                console.error('Error logging in:', error);
+                let errorMessage = 'Error logging in';
+                
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage = 'No account found with this username or email';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'Incorrect password';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email address';
+                        break;
+                    default:
+                        errorMessage = error.message;
+                }
+                
+                alert(errorMessage);
+                // Reset button state
+                submitButton.disabled = false;
+                submitButton.textContent = 'Login';
+            }
+        });
+    </script>
+</body>
+</html> 
