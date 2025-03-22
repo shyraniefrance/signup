@@ -3,49 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Firebase Authentication</title>
+    <title>Register</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #00ff88;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
         .error-message {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 5px;
+            color: #ff3366;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
             display: none;
         }
+
         .password-requirements {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.5rem;
+        }
+
+        .button {
+            width: 100%;
+            padding: 1rem;
+            background: #00ff88;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .button:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .login-link a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="form-container">
-            <h2>Register</h2>
-            <form id="register-form">
-                <div class="form-group">
-                    <input type="text" id="username" placeholder="Username" required>
-                    <div class="error-message" id="username-error"></div>
+        <h2 style="text-align: center; color: #00ff88; margin-bottom: 2rem; font-size: 2rem;">Register</h2>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                <div class="error-message" id="username-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <div class="error-message" id="email-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <div class="error-message" id="password-error"></div>
+                <div class="password-requirements">
+                    Password must be at least 6 characters long
                 </div>
-                <div class="form-group">
-                    <input type="email" id="email" placeholder="Email" required>
-                    <div class="error-message" id="email-error"></div>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="password" placeholder="Password" required>
-                    <div class="password-requirements">
-                        Password must be at least 6 characters long
-                    </div>
-                    <div class="error-message" id="password-error"></div>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="confirm-password" placeholder="Confirm Password" required>
-                    <div class="error-message" id="confirm-password-error"></div>
-                </div>
-                <button type="submit">Register</button>
-            </form>
-            <p>Already have an account? <a href="login.html">Login</a></p>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+                <div class="error-message" id="confirm-password-error"></div>
+            </div>
+
+            <button type="submit" class="button" id="register-btn">Register</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="login.html">Login</a>
         </div>
     </div>
 
@@ -69,138 +188,97 @@
         }
         const auth = firebase.auth();
 
-        // Check if user is already logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log('User is already logged in:', user.email);
-                window.location.href = 'welcome.html';
+        // Form validation
+        const form = document.getElementById('register-form');
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const registerBtn = document.getElementById('register-btn');
+
+        // Real-time password matching validation
+        confirmPasswordInput.addEventListener('input', () => {
+            if (confirmPasswordInput.value !== passwordInput.value) {
+                document.getElementById('confirm-password-error').textContent = 'Passwords do not match';
+                document.getElementById('confirm-password-error').style.display = 'block';
+            } else {
+                document.getElementById('confirm-password-error').style.display = 'none';
             }
         });
 
-        // Form validation
-        function validateForm() {
-            let isValid = true;
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Form submitted');
 
             // Reset error messages
-            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.style.display = 'none';
+            });
 
-            // Username validation
-            if (username.length < 3) {
+            // Validate username
+            if (usernameInput.value.length < 3) {
                 document.getElementById('username-error').textContent = 'Username must be at least 3 characters long';
                 document.getElementById('username-error').style.display = 'block';
-                isValid = false;
-            }
-
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                document.getElementById('email-error').textContent = 'Please enter a valid email address';
-                document.getElementById('email-error').style.display = 'block';
-                isValid = false;
-            }
-
-            // Password validation
-            if (password.length < 6) {
-                document.getElementById('password-error').textContent = 'Password must be at least 6 characters long';
-                document.getElementById('password-error').style.display = 'block';
-                isValid = false;
-            }
-
-            // Confirm password validation
-            if (password !== confirmPassword) {
-                document.getElementById('confirm-password-error').textContent = 'Passwords do not match';
-                document.getElementById('confirm-password-error').style.display = 'block';
-                isValid = false;
-            }
-
-            return isValid;
-        }
-
-        // Handle Register
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (!validateForm()) {
-                console.log('Form validation failed');
                 return;
             }
 
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+                document.getElementById('email-error').textContent = 'Please enter a valid email address';
+                document.getElementById('email-error').style.display = 'block';
+                return;
+            }
 
-            console.log('Starting registration process...');
-            console.log('Username:', username);
-            console.log('Email:', email);
+            // Validate password
+            if (passwordInput.value.length < 6) {
+                document.getElementById('password-error').textContent = 'Password must be at least 6 characters long';
+                document.getElementById('password-error').style.display = 'block';
+                return;
+            }
 
-            // Show loading state
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.textContent = 'Creating Account...';
+            // Validate password match
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                document.getElementById('confirm-password-error').textContent = 'Passwords do not match';
+                document.getElementById('confirm-password-error').style.display = 'block';
+                return;
+            }
+
+            // Disable button and show loading state
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Creating Account...';
 
             try {
-                console.log('Creating Firebase auth user...');
-                // Create user account
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                console.log('Firebase auth user created successfully:', user.uid);
-
-                console.log('Registration completed successfully');
-                alert('Account created successfully!');
-                window.location.href = 'welcome.html';
+                console.log('Creating user account...');
+                const userCredential = await auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value);
+                console.log('User account created successfully:', userCredential.user.email);
+                window.location.href = 'login.html';
             } catch (error) {
-                // Handle errors
-                console.error('Registration error:', error);
-                console.error('Error code:', error.code);
-                console.error('Error message:', error.message);
-                
-                let errorMessage = 'Error creating account';
+                console.error('Error creating account:', error);
+                let errorMessage = 'An error occurred. Please try again.';
                 
                 switch (error.code) {
                     case 'auth/email-already-in-use':
-                        errorMessage = 'This email is already registered';
+                        errorMessage = 'This email is already registered. Please use a different email.';
                         break;
                     case 'auth/invalid-email':
-                        errorMessage = 'Invalid email address';
+                        errorMessage = 'Please enter a valid email address.';
                         break;
                     case 'auth/operation-not-allowed':
-                        errorMessage = 'Email/password accounts are not enabled';
+                        errorMessage = 'Email/password accounts are not enabled. Please contact support.';
                         break;
                     case 'auth/weak-password':
-                        errorMessage = 'Password is too weak';
+                        errorMessage = 'Please choose a stronger password.';
                         break;
-                    case 'auth/network-request-failed':
-                        errorMessage = 'Network error. Please check your connection';
-                        break;
-                    case 'auth/too-many-requests':
-                        errorMessage = 'Too many attempts. Please try again later';
-                        break;
-                    default:
-                        errorMessage = error.message || 'An unexpected error occurred';
                 }
                 
-                alert(errorMessage);
+                document.getElementById('email-error').textContent = errorMessage;
+                document.getElementById('email-error').style.display = 'block';
+                
                 // Reset button state
-                submitButton.disabled = false;
-                submitButton.textContent = 'Register';
-            }
-        });
-
-        // Real-time password confirmation validation
-        document.getElementById('confirm-password').addEventListener('input', function() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = this.value;
-            const errorElement = document.getElementById('confirm-password-error');
-            
-            if (password !== confirmPassword) {
-                errorElement.textContent = 'Passwords do not match';
-                errorElement.style.display = 'block';
-            } else {
-                errorElement.style.display = 'none';
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Register';
             }
         });
     </script>

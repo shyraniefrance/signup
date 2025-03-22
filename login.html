@@ -3,39 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Firebase Authentication</title>
+    <title>Login</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #00ff88;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
         .error-message {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 5px;
+            color: #ff3366;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
             display: none;
+        }
+
+        .button {
+            width: 100%;
+            padding: 1rem;
+            background: #00ff88;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .button:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .register-link a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="form-container">
-            <h2>Login</h2>
-            <form id="login-form">
-                <div class="form-group">
-                    <input type="text" id="login-identifier" placeholder="Username or Email" required>
-                    <div class="error-message" id="identifier-error"></div>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="login-password" placeholder="Password" required>
-                </div>
-                <button type="submit">Login</button>
-            </form>
-            <p>Don't have an account? <a href="register.html">Register</a></p>
+        <h2 style="text-align: center; color: #00ff88; margin-bottom: 2rem; font-size: 2rem;">Login</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="identifier">Username or Email</label>
+                <input type="text" id="identifier" name="identifier" placeholder="Enter your username or email" required>
+                <div class="error-message" id="identifier-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <div class="error-message" id="password-error"></div>
+            </div>
+
+            <button type="submit" class="button" id="login-btn">Login</button>
+        </form>
+
+        <div class="register-link">
+            Don't have an account? <a href="register.html">Register</a>
         </div>
     </div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -44,8 +158,7 @@
             projectId: "signup-6504f",
             storageBucket: "signup-6504f.firebasestorage.app",
             messagingSenderId: "722220780138",
-            appId: "1:722220780138:web:9a8cfb00b0c55590c71813",
-            databaseURL: "https://signup-6504f-default-rtdb.firebaseio.com"
+            appId: "1:722220780138:web:9a8cfb00b0c55590c71813"
         };
 
         // Initialize Firebase
@@ -53,123 +166,71 @@
             firebase.initializeApp(firebaseConfig);
         }
         const auth = firebase.auth();
-        const database = firebase.database();
-
-        // Check if user is already logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log('User is already logged in:', user.email);
-                window.location.href = 'welcome.html';
-            }
-        });
 
         // Form validation
-        function validateForm() {
-            const identifier = document.getElementById('login-identifier').value;
-            const errorElement = document.getElementById('identifier-error');
-            
-            // Reset error message
-            errorElement.style.display = 'none';
+        const form = document.getElementById('login-form');
+        const identifierInput = document.getElementById('identifier');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('login-btn');
 
-            // Check if input is empty
-            if (!identifier) {
-                errorElement.textContent = 'Please enter your username or email';
-                errorElement.style.display = 'block';
-                return false;
-            }
-
-            // Check if input is a valid email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(identifier)) {
-                // If not an email, check if it's a valid username (at least 3 characters)
-                if (identifier.length < 3) {
-                    errorElement.textContent = 'Please enter a valid username (min 3 characters) or email';
-                    errorElement.style.display = 'block';
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        // Function to find email by username
-        function findEmailByUsername(username) {
-            return new Promise((resolve, reject) => {
-                database.ref('users').orderByChild('username').equalTo(username).once('value')
-                    .then((snapshot) => {
-                        if (snapshot.exists()) {
-                            const userData = snapshot.val();
-                            const userId = Object.keys(userData)[0];
-                            resolve(userData[userId].email);
-                        } else {
-                            reject(new Error('Username not found'));
-                        }
-                    })
-                    .catch((error) => {
-                        reject(error);
-                    });
-            });
-        }
-
-        // Handle Login
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            if (!validateForm()) {
+            console.log('Form submitted');
+
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.style.display = 'none';
+            });
+
+            // Validate identifier
+            if (!identifierInput.value) {
+                document.getElementById('identifier-error').textContent = 'Please enter your username or email';
+                document.getElementById('identifier-error').style.display = 'block';
                 return;
             }
 
-            const identifier = document.getElementById('login-identifier').value;
-            const password = document.getElementById('login-password').value;
+            // Validate password
+            if (!passwordInput.value) {
+                document.getElementById('password-error').textContent = 'Please enter your password';
+                document.getElementById('password-error').style.display = 'block';
+                return;
+            }
 
-            console.log('Attempting to login with identifier:', identifier);
-
-            // Show loading state
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.textContent = 'Logging in...';
+            // Disable button and show loading state
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
 
             try {
-                // Check if identifier is an email
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                const isEmail = emailRegex.test(identifier);
-
-                let emailToUse = identifier;
-                
-                // If it's not an email, try to find the email associated with the username
-                if (!isEmail) {
-                    emailToUse = await findEmailByUsername(identifier);
-                }
-
-                // Attempt to login with the email
-                const userCredential = await auth.signInWithEmailAndPassword(emailToUse, password);
-                const user = userCredential.user;
-                console.log('User logged in successfully:', user.email);
-               // alert('Logged in successfully!');
+                console.log('Attempting to log in...');
+                const userCredential = await auth.signInWithEmailAndPassword(identifierInput.value, passwordInput.value);
+                console.log('Login successful:', userCredential.user.email);
                 window.location.href = 'welcome.html';
             } catch (error) {
-                // Handle errors
-                console.error('Error logging in:', error);
-                let errorMessage = 'Error logging in';
+                console.error('Login error:', error);
+                let errorMessage = 'An error occurred. Please try again.';
                 
                 switch (error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage = 'Please enter a valid email address.';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage = 'This account has been disabled. Please contact support.';
+                        break;
                     case 'auth/user-not-found':
-                        errorMessage = 'No account found with this username or email';
+                        errorMessage = 'No account found with this email. Please register first.';
                         break;
                     case 'auth/wrong-password':
-                        errorMessage = 'Incorrect password';
+                        errorMessage = 'Incorrect password. Please try again.';
                         break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Invalid email address';
-                        break;
-                    default:
-                        errorMessage = error.message;
                 }
                 
-                alert(errorMessage);
+                document.getElementById('identifier-error').textContent = errorMessage;
+                document.getElementById('identifier-error').style.display = 'block';
+                
                 // Reset button state
-                submitButton.disabled = false;
-                submitButton.textContent = 'Login';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
             }
         });
     </script>
